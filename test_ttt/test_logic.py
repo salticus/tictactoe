@@ -14,8 +14,18 @@ def state():
     return logic.State()
 
 
-def test_print_board(board):
-    logic.print_board(board)
+def test_print_board(state):
+    state.print_board()
+
+
+def test_parse_input(state):
+    print(state.parse_place("1,2"))
+
+
+def test_bad_input(state):
+    assert state.parse_place("asdf") is None
+    assert state.parse_place("1000,1000") is None
+    assert state.parse_place("1000") is None
 
 
 def test_won(state):

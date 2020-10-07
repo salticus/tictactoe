@@ -28,6 +28,8 @@ class State:
         self.whose_turn = PLAYER_X
         self.status = "Playing"
 
+    def change_turns(self):
+        self.whose_turn = PLAYER_X if self.whose_turn == PLAYER_Y else PLAYER_Y
 
     def _clear_board(self):
         return {(row, column): BLANK
@@ -46,12 +48,14 @@ class State:
         Check for win or draw status
         """
         self.board[xy] = self.whose_turn
+        self.print_board()
         if self.has_player_won(self.whose_turn):
             print(f"Player {self.whose_turn}, you have won!")
             self.reset()
         if self.game_is_a_draw():
             print(f"This game is a draw. Restarting the game.")
             self.reset()
+        self.change_turns()
 
 
     def has_player_won(self, player):
@@ -106,23 +110,26 @@ class State:
         board: {(x: int, y: int): value
         """
         print(end="\n")
-        for row in range(ROWS):
-            for column in range(COLUMNS):
+        for row in range(self.rows):
+            for column in range(self.columns):
                 print(self.board[(row, column)], end=" | ")
             print()
-            for column in range(COLUMNS):
+            for column in range(self.columns):
                 print("-", end="-|-")
             print(end="\n")
 
     def parse_place(self, string):
         # clean
-        x, y = string.split(",")
         try:
-            row = int(y.strip())
-            column = int(x.strip())
+            x, y = string.split(",")
+            row = int(x.strip())
+            column = int(y.strip())
         except ValueError as e:
             print("Coordinates must be a comma separated pair of numbers, column first"
                     "For example: 2, 1\n")
+            return None
+        if (self.rows <= row) or (self.columns <= column):
+            print("Coordinates must be within the space on the board (zero indexed ;-)")
             return None
         return (row, column)
 
@@ -134,13 +141,14 @@ def main():
     state = State()
     print("Coordinates are zero based")
     print()
+    state.print_board()
     while(True):
-        state.print_board()
         in_xy = input(f"Player {state.whose_turn}, please enter your move\n")
         xy = state.parse_place(in_xy)
         if not xy: 
             continue
         if not state.open_square(xy):
+            print("That square is already taken! Try another.")
             continue
         state.mark_square(xy)
 
