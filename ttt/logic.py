@@ -133,25 +133,25 @@ class State:
             return None
         return (row, column)
 
-
-def main():
-    """
-    Start game
-    """
-    state = State()
-    print("Coordinates are zero based")
-    print()
-    state.print_board()
-    while(True):
-        in_xy = input(f"Player {state.whose_turn}, please enter your move\n")
-        xy = state.parse_place(in_xy)
-        if not xy: 
-            continue
-        if not state.open_square(xy):
-            print("That square is already taken! Try another.")
-            continue
-        state.mark_square(xy)
+        
+    def loop(self):
+        """
+        Start game
+        """
+        print("Coordinates are zero based")
+        print()
+        self.print_board()
+        while(True):
+            in_xy = input(f"Player {self.whose_turn}, please enter your move\n")
+            xy = self.parse_place(in_xy)
+            if not xy: 
+                continue
+            if not self.open_square(xy):
+                print("That square is already taken! Try another.")
+                continue
+            self.mark_square(xy)
 
 
 if __name__ == "__main__":
-    main()
+    state = State()
+    state.loop()
