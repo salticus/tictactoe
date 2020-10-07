@@ -125,8 +125,8 @@ class State:
             row = int(x.strip())
             column = int(y.strip())
         except ValueError as e:
-            print("Coordinates must be a comma separated pair of numbers, column first"
-                    "For example: 2, 1\n")
+            print("Coordinates must be a comma separated pair of numbers, row first"
+                  "\nFor example: 2, 0 for the bottom left square.\n")
             return None
         if (self.rows <= row) or (self.columns <= column):
             print("Coordinates must be within the space on the board (zero indexed ;-)")
