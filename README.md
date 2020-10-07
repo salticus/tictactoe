@@ -16,4 +16,24 @@ Requires Python 3.6
 
     git clone https://github.com/salticus/tictactoe
     pushd tictactoe
+    # or python -m ttt
+    # python -v will show what
     python3 -m ttt
+
+
+# Testing
+
+    # install dependencies
+    python3 -m venv venv
+    source ./venv/bin/activate
+    pip install -U pip
+    pip install -r requirements
+  
+    # run tests
+    python -m pytest
+
+    # run tests, not capturing output
+    python -m pytest -s
+
+    # run subset of tests, e.g. test_bad_input
+    python -m pytest -k bad
