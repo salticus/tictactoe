@@ -8,3 +8,13 @@
 - Show the current score
 
 Note: "the current score" implies the game restarts when it is done (won or drawn)
+
+
+# Set Up
+
+Requires Python 3.6
+
+
+# Running
+
+python3 -m ttt
