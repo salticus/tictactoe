@@ -36,6 +36,9 @@ class State:
                 for row in range(self.rows)
                     for column in range(self.columns)}
 
+    def score_point(self, player):
+        self.score[player] += 1
+
     def open_square(self, xy):
         """
         Verify that the spot is not already taken
@@ -48,9 +51,10 @@ class State:
         Check for win or draw status
         """
         self.board[xy] = self.whose_turn
-        self.print_board()
         if self.has_player_won(self.whose_turn):
             print(f"Player {self.whose_turn}, you have won!")
+            self.score_point(self.whose_turn)
+            self.print_board()
             self.reset()
         if self.game_is_a_draw():
             print(f"This game is a draw. Restarting the game.")
@@ -109,7 +113,8 @@ class State:
         """
         board: {(x: int, y: int): value
         """
-        print(end="\n")
+        print(f"Score: X: {self.score[PLAYER_X]}    Y: {self.score[PLAYER_Y]}")
+        print(f"Player {self.whose_turn}'s turn.")
         for row in range(self.rows):
             for column in range(self.columns):
                 print(self.board[(row, column)], end=" | ")
@@ -132,7 +137,6 @@ class State:
             print("Coordinates must be within the space on the board (zero indexed ;-)")
             return None
         return (row, column)
-
         
     def loop(self):
         """
@@ -140,9 +144,9 @@ class State:
         """
         print("Coordinates are zero based")
         print()
-        self.print_board()
         while(True):
-            in_xy = input(f"Player {self.whose_turn}, please enter your move\n")
+            self.print_board()
+            in_xy = input(f"\nPlayer {self.whose_turn}, what's your move?\n")
             xy = self.parse_place(in_xy)
             if not xy: 
                 continue
