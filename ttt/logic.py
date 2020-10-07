@@ -19,13 +19,13 @@ class State:
         self.columns = columns
 
         self.board = self._clear_board()
-        self.turn = PLAYER_X
+        self.whose_turn = PLAYER_X
         self.status = "Playing"
         self.score = {PLAYER_X: 0, PLAYER_Y: 0}
 
     def reset(self):
         self.board = self._clear_board()
-        self.turn = PLAYER_X
+        self.whose_turn = PLAYER_X
         self.status = "Playing"
 
 
@@ -40,12 +40,19 @@ class State:
         """
         return self.board[xy] == BLANK
 
-    def mark_square(self, player, xy):
+    def mark_square(self, xy):
         """
         Mark square.
         Check for win or draw status
         """
-        self.board[xy] = player
+        self.board[xy] = self.whose_turn
+        if self.has_player_won(self.whose_turn):
+            print(f"Player {self.whose_turn}, you have won!")
+            self.reset()
+        if self.game_is_a_draw():
+            print(f"This game is a draw. Restarting the game.")
+            self.reset()
+
 
     def has_player_won(self, player):
         """
@@ -73,7 +80,7 @@ class State:
 
         return False
 
-    def is_game_a_draw(self):
+    def game_is_a_draw(self):
         """
         Check for conflict along any line
         """
@@ -81,46 +88,46 @@ class State:
         board = self.board
 
         # check 
-        all_rows = all( set(board[(row, v)] for v in range(self.columns)) == both
+        all_rows = all( set(board[(row, v)] for v in range(self.columns)) == both_players
                                 for row in range(self.rows) )
-        all_columns = all( set(board[(v, column)] for v in range(self.rows)) == both
+        all_columns = all( set(board[(v, column)] for v in range(self.rows)) == both_players
                                 for column in range(self.columns) )
 
         # back slash, assumes square
-        back_slash = (set(board[(v, v)] for v in range(self.rows)) == player_set)
+        back_slash = (set(board[(v, v)] for v in range(self.rows)) == both_players)
 
         forward_slash_xys = zip(range(self.rows), range(self.columns)[::-1])
-        forward_slash = (set(board[xy] for xy in forward_slash_xys) == player_set)
+        forward_slash = (set(board[xy] for xy in forward_slash_xys) == both_players)
 
         return all((all_rows, all_columns, back_slash, forward_slash))
 
-
-
-def print_board(board):
-    """
-    board: {(x: int, y: int): value
-    """
-    print(end="\n")
-    for row in range(COLUMNS):
-        for column in range(ROWS):
-            print(board[(row, column)], end=" ")
+    def print_board(self):
+        """
+        board: {(x: int, y: int): value
+        """
         print(end="\n")
+        for row in range(ROWS):
+            for column in range(COLUMNS):
+                print(self.board[(row, column)], end=" | ")
+            print()
+            for column in range(COLUMNS):
+                print("-", end="-|-")
+            print(end="\n")
+
+    def parse_place(self, string):
+        # clean
+        x, y = string.split(",")
+        try:
+            row = int(y.strip())
+            column = int(x.strip())
+        except ValueError as e:
+            print("Coordinates must be a comma separated pair of numbers, column first"
+                    "For example: 2, 1\n")
+            return None
+        return (row, column)
 
 
-def parse_place(string):
-    # clean
-    y, x = string.split(",")
-    try:
-        row = int(y.strip())
-        column = int(x.strip())
-    except ValueError as e:
-        print("Coordinates must be a comma separated pair of numbers, column first"
-                "For example: 2, 1\n")
-        return None
-    return (row, column)
-
-
-def game_loop():
+def main():
     """
     Start game
     """
@@ -129,10 +136,14 @@ def game_loop():
     print()
     while(True):
         state.print_board()
-        input(f"Player {state.turn}, please enter your move\n", in_coordinates)
-        xy = parse_place(in_coordinates)
+        in_xy = input(f"Player {state.whose_turn}, please enter your move\n")
+        xy = state.parse_place(in_xy)
         if not xy: 
             continue
         if not state.open_square(xy):
             continue
         state.mark_square(xy)
+
+
+if __name__ == "__main__":
+    main()

@@ -42,6 +42,29 @@ def test_won(state):
             }
     assert state.has_player_won(Y)
 
+    state.board = {
+            (0,0): X, (0,1): X, (0,2): Y,
+            (1,0): X, (1,1): Y, (1,2): X,
+            (2,0): Y, (2,1): Y, (2,2): X,
+            }
+    assert state.has_player_won(Y)
+    assert not state.game_is_a_draw()
+
+
+def test_drawn(state):
+
+    X = logic.PLAYER_X
+    Y = logic.PLAYER_Y
+
+    state.board = {
+            (0,0): X, (0,1): X, (0,2): Y,
+            (1,0): Y, (1,1): Y, (1,2): X,
+            (2,0): X, (2,1): Y, (2,2): X,
+            }
+    assert not state.has_player_won(X)
+    assert not state.has_player_won(Y)
+    assert state.game_is_a_draw()
+
 
 def test_prompt():
     pass
